@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <title>Bai 3</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="../css/bootstrap.min.css" />
+
+  <style>
+    /* Titles like screenshot */
+    .section-title {
+      color: #10b7ff; /* cyan-ish */
+      font-weight: 500;
+      font-size: 2rem;
+      margin: 0.75rem 0 0.75rem;
+    }
+
+    /* Make it look like a narrow sidebar */
+    .sidebar-wrap {
+      max-width: 360px;
+    }
+
+    /* Avatar card spacing */
+    .avatar-box {
+      background: #f2f2f2;
+      border-radius: .25rem;
+      padding: 1.25rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 260px;
+    }
+    .avatar-img {
+      max-width: 240px;
+      width: 80%;
+      height: auto;
+    }
+
+    /* List group badge style */
+    .count-badge {
+      border-radius: 999px;
+      padding: .25rem .55rem;
+      font-weight: 700;
+      font-size: .75rem;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar (reuse Bai 2) -->
+  <nav class="navbar navbar-expand-lg" style="background:#eaf4ff; border-bottom:1px solid #d9e6f5;">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+        <img src="../images/logo.png" alt="Logo" width="36" height="36">
+        <span class="fw-bold">MySite</span>
+      </a>
+
+      <button class="navbar-toggler" type="button"
+              data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+              aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item"><a class="nav-link" href="#">Bài viết</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Video</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Giới thiệu</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Sự kiện</a></li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">
+              Tài khoản
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Đăng nhập</a></li>
+              <li><a class="dropdown-item" href="#">Quên mật khẩu</a></li>
+              <li><a class="dropdown-item" href="#">Đăng ký thành viên</a></li>
+            </ul>
+          </li>
+        </ul>
+
+        <div class="d-flex gap-3">
+          <a class="text-decoration-none text-dark fw-semibold" href="#">Tiếng Việt</a>
+          <a class="text-decoration-none text-dark fw-semibold" href="#">Tiếng Anh</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Body -->
+  <div class="container my-3">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-12 col-md-4 sidebar-wrap">
+
+        <h2 class="section-title">Về tôi</h2>
+
+        <div class="card">
+          <div class="card-body">
+            <div class="avatar-box mb-3">
+              <img class="avatar-img" src="../images/avatar.png" alt="Avatar">
+            </div>
+
+            <h5 class="fw-semibold mb-2">Giới thiệu bản thân</h5>
+
+            <p class="mb-1 small">
+              TS. Trần Hoàng, Tổ chức Tư vấn sức khỏe quốc tế độc lập
+            </p>
+            <p class="mb-0 small">
+              Châm ngôn: Ta không được chọn nơi mình sinh ra, nhưng ta được chọn cách mình sẽ sống
+            </p>
+          </div>
+        </div>
+
+        <h2 class="section-title mt-4">Chuyên mục</h2>
+
+        <div class="list-group">
+          <a href="#"
+             class="list-group-item list-group-item-action active d-flex justify-content-between align-items-center">
+            Chế độ tập
+            <span class="badge bg-primary count-badge">12</span>
+          </a>
+
+          <a href="#"
+             class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            Chế độ dinh dưỡng
+            <span class="badge bg-primary count-badge">15</span>
+          </a>
+
+          <a href="#"
+             class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            Cẩm nang cuộc sống
+            <span class="badge bg-primary count-badge">99</span>
+          </a>
+        </div>
+
+      </div>
+
+      <!-- (Optional) Right column blank, like your screenshot crop -->
+      <div class="col-12 col-md-8">
+        <!-- Leave empty or add content if your lab requires -->
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
