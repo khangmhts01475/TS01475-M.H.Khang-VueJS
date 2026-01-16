@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <title>Bai 3 - Post (Page 2)</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="../css/bootstrap.min.css" />
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    body { background:#fff; }
+    .wrap { max-width:1100px; margin:0 auto; }
+    .topbar{ background:#eaf4ff; border-bottom:1px solid #d9e6f5; min-height:72px; }
+    .brand-logo{ height:44px; }
+    .nav-center .nav-link{ font-weight:600; gap:.45rem; }
+    .lang a{ font-weight:600; margin-left:1rem; }
+
+    .banner-wrap{ padding:14px 12px 0; }
+    .carousel-item img{ height:260px; object-fit:cover; }
+
+    .page-title{ color:#14b5ff; font-size:2rem; font-weight:600; margin:18px 0; }
+
+    .post-card{ border:1px solid #e6e6e6; border-radius:.25rem; overflow:hidden; background:#fff; }
+    .post-thumb{ height:180px; object-fit:cover; width:100%; }
+    .post-meta{ font-size:12px; color:#6b7280; display:flex; gap:10px; flex-wrap:wrap; }
+
+    .side-box{ border:1px solid #e6e6e6; border-radius:.25rem; padding:12px; background:#fff; }
+    .side-title{ font-weight:700; margin-bottom:10px; }
+
+    footer{ background:#22272e; color:#fff; text-align:center; padding:18px; margin-top:24px; }
+  </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg topbar">
+  <div class="container wrap">
+    <a class="navbar-brand" href="index.html">
+      <img src="../images/logo.png" class="brand-logo">
+    </a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav mx-auto nav-center">
+        <li class="nav-item"><a class="nav-link active" href="post.html"><i class="fa-regular fa-file-lines"></i> Bài viết</a></li>
+        <li class="nav-item"><a class="nav-link" href="#"><i class="fa-solid fa-film"></i> Video</a></li>
+        <li class="nav-item"><a class="nav-link" href="#"><i class="fa-solid fa-circle-info"></i> Giới thiệu</a></li>
+        <li class="nav-item"><a class="nav-link" href="#"><i class="fa-regular fa-calendar"></i> Sự kiện</a></li>
+      </ul>
+      <div class="lang"><a href="#">Tiếng Việt</a><a href="#">Tiếng Anh</a></div>
+    </div>
+  </div>
+</nav>
+
+<!-- CONTENT -->
+<div class="wrap px-3">
+  <div class="page-title">Bài viết</div>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+
+      <!-- Post -->
+      <div class="post-card mb-4">
+        <img src="../images/video1.jpg" class="post-thumb">
+        <div class="p-3">
+          <h5 class="fw-bold">Đi xa hơn để trưởng thành hơn</h5>
+          <div class="post-meta mb-2">
+            <span><i class="fa-regular fa-calendar"></i> 04/01/2026</span>
+            <span><i class="fa-regular fa-comment"></i> 22</span>
+          </div>
+          <p>Tuổi trẻ là những chuyến đi, là hành trình học cách đứng vững giữa cuộc đời...</p>
+          <a class="btn btn-outline-info">Đọc tiếp</a>
+        </div>
+      </div>
+
+      <div class="post-card mb-4">
+        <img src="../images/video2.jpg" class="post-thumb">
+        <div class="p-3">
+          <h5 class="fw-bold">Chút tâm tư những ngày cuối năm</h5>
+          <div class="post-meta mb-2">
+            <span><i class="fa-regular fa-calendar"></i> 05/01/2026</span>
+            <span><i class="fa-regular fa-comment"></i> 18</span>
+          </div>
+          <p>Cuối năm là lúc con người ta chậm lại, nhìn lại những điều đã qua...</p>
+          <a class="btn btn-outline-info">Đọc tiếp</a>
+        </div>
+      </div>
+
+      <!-- Pagination -->
+      <ul class="pagination justify-content-center">
+          <li class="page-item"><a class="page-link" href="Bai3.html"><i class="fa-solid fa-arrow-left"></i></a></li>
+        <li class="page-item"><a class="page-link" href="Bai3.html">1</a></li>
+        <li class="page-item active"><a class="page-link" href="Bai3_2.html">2</a></li>
+        <li class="page-item"><a class="page-link" href="Bai3_3.html">3</a></li>
+                 <li class="page-item"><a class="page-link" href="Bai3_3.html"><i class="fa-solid fa-arrow-right"></i></a></li>
+      </ul>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="side-box">
+        <div class="side-title">Chuyên mục</div>
+        <div class="list-group">
+          <a class="list-group-item">Pilates</a>
+          <a class="list-group-item">Dinh dưỡng</a>
+          <a class="list-group-item">Cẩm nang</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>©Copyright by FPT Polytechnic</footer>
+<script src="../js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
