@@ -1,37 +1,29 @@
 <!doctype html>
 <html lang="vi">
 <head>
-  <title>Bai 2 - Index</title>
+  <title>Bai 3 - Post</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- Bootstrap CSS (local) -->
   <link rel="stylesheet" href="../css/bootstrap.min.css" />
 
-  <!-- Font Awesome (optional, for icons in navbar / comments) -->
+  <!-- Font Awesome (optional) -->
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 
   <style>
     body { background:#fff; }
 
-    /* Same “clean” max width feel as screenshot */
-    .wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-    }
+    .wrap { max-width: 1100px; margin: 0 auto; }
 
-    /* Navbar vibe (Lab1-like) */
+    /* Navbar */
     .topbar {
       background: #eaf4ff;
       border-bottom: 1px solid #d9e6f5;
       min-height: 72px;
     }
-    .brand-logo {
-      height: 44px;
-      width: auto;
-      object-fit: contain;
-    }
+    .brand-logo { height: 44px; width: auto; object-fit: contain; }
     .nav-center .nav-link {
       color: #2b2b2b;
       padding: 0.75rem 0.9rem;
@@ -50,128 +42,125 @@
     }
     .lang a:hover { text-decoration: underline; }
 
-    /* Banner / carousel */
+    /* Banner */
     .banner-wrap { padding: 14px 12px 0; }
-    .carousel-item img {
-      height: 320px;
-      object-fit: cover;
-    }
+    .carousel-item img { height: 260px; object-fit: cover; }
 
-    /* Section titles like screenshot */
-    .section-title {
-      color: #14b5ff;
-      font-weight: 500;
+    /* Section titles (cyan like screenshot) */
+    .section-title{
+      color:#14b5ff;
+      font-weight:600;
       font-size: 1.9rem;
       margin: 18px 0 12px;
     }
 
-    /* About card avatar */
-    .avatar-box {
-      background: #f2f2f2;
-      border-radius: .25rem;
-      padding: 1.25rem;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      min-height: 260px;
-      border: 1px solid #e0e0e0;
-    }
-    .avatar-img { width: 80%; max-width: 240px; height:auto; }
-
-    /* Blog main card */
-    .blog-card {
+    /* Sidebar boxes */
+    .side-box{
       border: 1px solid #e6e6e6;
       border-radius: .25rem;
-      background: #fff;
-      padding: 12px;
+      background:#fff;
+      overflow:hidden;
     }
-    .blog-big-title {
-      font-weight: 700;
+    .side-box .box-head{
+      padding: 10px 12px;
+      font-weight:700;
+      border-bottom: 1px solid #eee;
+      background:#fff;
+    }
+    .side-box .box-body{ padding: 10px 12px; }
+
+    /* Category list like screenshot */
+    .cat-item{
+      border: 1px solid #e6e6e6;
+      border-radius: .25rem;
+      padding: 10px 12px;
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      margin-bottom: 8px;
+      background:#fff;
+    }
+    .cat-item.active{
+      background:#10b5ff; /* blue highlight */
+      color:#fff;
+      border-color:#10b5ff;
+    }
+    .cat-item .badge{
+      border-radius: 999px;
+      font-weight:700;
+      padding: .25rem .6rem;
+    }
+    .cat-item.active .badge{ background:#0b6ef6 !important; }
+
+    /* Featured posts list (image circle on left like screenshot) */
+    .featured-item{
+      display:flex;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .featured-item:last-child{ border-bottom:none; }
+    .featured-img{
+      width: 64px;
+      height: 64px;
+      border-radius: 999px;
+      object-fit: cover;
+      border: 1px solid #e6e6e6;
+      flex: 0 0 auto;
+    }
+    .featured-title{
+      font-weight:700;
       font-size: 14px;
       margin: 0 0 6px;
+      line-height: 1.25;
     }
-    .meta {
-      color: #666;
+    .featured-excerpt{
       font-size: 12px;
-      display:flex;
-      gap:6px;
-      align-items:center;
-    }
-    .big-img {
-      width: 100%;
-      height: 210px;
-      object-fit: cover;
-      border-radius: .2rem;
-      border: 1px solid #e6e6e6;
-      margin-bottom: 8px;
+      color:#666;
+      margin:0;
+      line-height: 1.35;
     }
 
-    /* Right small list beside Blog main */
-    .mini-list {
+    /* Post grid cards (2 columns on the right) */
+    .post-card{
       border: 1px solid #e6e6e6;
       border-radius: .25rem;
-      background: #fff;
-      padding: 8px 10px;
+      background:#fff;
+      overflow:hidden;
       height: 100%;
     }
-    .mini-item {
-      display:grid;
-      grid-template-columns: 56px 1fr;
-      gap:10px;
-      padding: 8px 0;
-      border-bottom: 1px solid #f0f0f0;
-    }
-    .mini-item:last-child { border-bottom:none; }
-    .mini-img {
-      width: 56px;
-      height: 56px;
+    .post-thumb{
+      width:100%;
+      height: 170px;
       object-fit: cover;
-      border-radius: .2rem;
-      border: 1px solid #e6e6e6;
+      border-bottom: 1px solid #eee;
     }
-    .mini-title {
-      font-weight: 700;
-      font-size: 13px;
+    .post-body{ padding: 10px 12px 12px; }
+    .post-title{
+      font-weight:700;
+      font-size: 14px;
       line-height: 1.25;
-      margin: 0 0 4px;
+      margin: 0 0 8px;
+      min-height: 36px; /* makes titles align nicer */
+    }
+    .post-meta{
+      color:#666;
+      font-size: 12px;
+      display:flex;
+      align-items:center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .post-excerpt{
+      font-size: 12px;
+      color:#666;
+      margin:0;
+      line-height: 1.4;
     }
 
-    /* “Đọc nhiều / Xem nhiều” block */
-    .simple-list {
-      border: 1px solid #e6e6e6;
+    /* Pagination like screenshot */
+    .pagination .page-link{
       border-radius: .25rem;
-      background: #fff;
-      padding: 10px;
-    }
-    .simple-item {
-      display:grid;
-      grid-template-columns: 56px 1fr;
-      gap:10px;
-      padding: 10px 0;
-      border-bottom: 1px solid #f0f0f0;
-    }
-    .simple-item:last-child { border-bottom:none; }
-    .simple-img {
-      width: 56px;
-      height: 56px;
-      object-fit: cover;
-      border-radius: .2rem;
-      border: 1px solid #e6e6e6;
-    }
-
-    /* Video title + cards grid */
-    .video-title{
-      color: #14b5ff;
-      font-weight: 600;
-      font-size: 2rem;
-      text-align: center;
-      letter-spacing: .5px;
-      margin: 0 0 14px;   /* tighter and avoids pushing down too much */
-      padding-top: 0;
-    }
-    .video-card img {
-      height: 130px;
-      object-fit: cover;
     }
 
     footer {
@@ -186,11 +175,10 @@
 
 <body>
 
-  <!-- NAVBAR (Lab 1 style) -->
+  <!-- NAVBAR -->
   <nav class="navbar navbar-expand-lg topbar">
     <div class="container wrap">
-
-      <a class="navbar-brand d-flex align-items-center" href="#">
+      <a class="navbar-brand d-flex align-items-center" href="index.html">
         <img src="../images/logo.png" class="brand-logo" alt="Logo">
       </a>
 
@@ -201,10 +189,14 @@
 
       <div class="collapse navbar-collapse" id="mainNavbar">
         <ul class="navbar-nav mx-auto nav-center">
-          <li class="nav-item"><a class="nav-link" href="#"><i class="fa-regular fa-file-lines"></i> Bài viết</a></li>
+          <li class="nav-item">
+            <a class="nav-link active" href="post.html">
+              <i class="fa-regular fa-file-lines"></i> Bài viết
+            </a>
+          </li>
           <li class="nav-item"><a class="nav-link" href="#"><i class="fa-solid fa-film"></i> Video</a></li>
           <li class="nav-item"><a class="nav-link" href="#"><i class="fa-solid fa-circle-info"></i> Giới thiệu</a></li>
-          <li class="nav-item"><a class="nav-link" href="#"><i class="fa-regular fa-calendar"></i> Sự kiện</a></li>
+          <li class="nav-item"><a class="nav-link" href="#"><i class="fa-solid fa-phone"></i> Liên hệ</a></li>
 
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
@@ -223,7 +215,6 @@
           <a href="#">Tiếng Anh</a>
         </div>
       </div>
-
     </div>
   </nav>
 
@@ -251,167 +242,180 @@
     </div>
   </div>
 
-  <!-- MAIN CONTENT -->
+  <!-- MAIN -->
   <div class="wrap px-3">
-
-    <!-- Row 1: Về tôi | Blog main | Mini list -->
-    <div class="row g-4 align-items-stretch">
-      <!-- About -->
+    <div class="row g-4">
+      <!-- LEFT SIDEBAR -->
       <div class="col-12 col-lg-4">
-        <h2 class="section-title">Về tôi</h2>
-        <div class="card h-100">
-          <div class="card-body">
-            <div class="avatar-box mb-3">
-              <img class="avatar-img" src="../images/avatar.png" alt="Avatar">
+
+        <div class="section-title">Chuyên mục</div>
+        <div class="side-box mb-4">
+          <div class="box-body">
+            <div class="cat-item active">
+              <span>Chế độ tập</span>
+              <span class="badge bg-primary">12</span>
             </div>
-            <h5 class="fw-semibold mb-2">Giới thiệu bản thân</h5>
-            <p class="mb-1 small">TS. Trần Hoàng, Tổ chức Tư vấn sức khỏe quốc tế độc lập</p>
-            <p class="mb-0 small">Châm ngôn: Ta không được chọn nơi mình sinh ra, nhưng ta được chọn cách mình sẽ sống</p>
+            <div class="cat-item">
+              <span>Chế độ dinh dưỡng</span>
+              <span class="badge bg-primary">15</span>
+            </div>
+            <div class="cat-item">
+              <span>Cẩm nang cuộc sống</span>
+              <span class="badge bg-primary">99</span>
+            </div>
           </div>
         </div>
+
+        <div class="section-title" style="margin-top:0;">Bài viết nổi bật</div>
+        <div class="side-box">
+          <div class="box-body">
+            <div class="featured-item">
+              <img class="featured-img" src="../images/spinach_300x300.jpg" alt="">
+              <div>
+                <div class="featured-title">Lợi ích khi ăn rau mỗi ngày</div>
+                <p class="featured-excerpt">
+                  Tiêu thụ rau xanh hằng ngày sẽ giúp tăng cường thể lực, kiểm soát cân nặng, ngăn ngừa ung thư...
+                </p>
+              </div>
+            </div>
+
+            <div class="featured-item">
+              <img class="featured-img" src="../images/Orange.jpg" alt="">
+              <div>
+                <div class="featured-title">9 tác dụng tuyệt vời của quả cam</div>
+                <p class="featured-excerpt">
+                  Cam tự hào về khả năng chống lão hóa mạnh mẽ nhờ hàm lượng chất chống oxy hóa cao...
+                </p>
+              </div>
+            </div>
+
+            <div class="featured-item">
+              <img class="featured-img" src="../images/sesameoil_300x300.jpg" alt="">
+              <div>
+                <div class="featured-title">10 công dụng bất ngờ từ dầu dừa</div>
+                <p class="featured-excerpt">
+                  Dầu dừa như một loại kem dưỡng ẩm tự nhiên cho cơ thể, giúp việc sản xuất collagen...
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
-      <!-- Blog main -->
-      <div class="col-12 col-lg-5">
-        <h2 class="section-title">Blog của tôi</h2>
-        <div class="blog-card h-100">
-          <div class="d-flex justify-content-between align-items-start">
-            <div class="blog-big-title">Phương pháp tập Pilates giúp phục hồi chấn thương cột sống</div>
-            <div class="meta">
-              <i class="fa-regular fa-comment" style="opacity:.7"></i><span>16</span>
-            </div>
-          </div>
-
-          <img class="big-img" src="../images/tap-piltes.jpg" alt="Pilates">
-
-          <p class="small text-muted mb-0">
-            Ngoài việc giúp duy trì vóc dáng, cải thiện sự linh hoạt, dẻo dai cho người tập,
-            Pilates giúp cơ bắp và các khớp mọc dai hơn, kéo giãn hơn...
-          </p>
-
-          <div class="text-center mt-3">
-            <button class="btn btn-info text-white px-4">Xem thêm</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Mini list -->
-      <div class="col-12 col-lg-3">
-        <h2 class="section-title" style="visibility:hidden;">_</h2>
-        <div class="mini-list h-100">
-          <div class="mini-item">
-            <img class="mini-img" src="../images/corevalue.jpg" alt="">
-            <div>
-              <p class="mini-title">Biết ơn đời, đời sẽ thương ta</p>
-              <div class="meta"><i class="fa-regular fa-comment" style="opacity:.7"></i><span>30</span></div>
-            </div>
-          </div>
-
-          <div class="mini-item">
-            <img class="mini-img" src="../images/Orange.jpg" alt="">
-            <div>
-              <p class="mini-title">9 tác dụng tuyệt vời của quả cam</p>
-              <div class="meta"><i class="fa-regular fa-comment" style="opacity:.7"></i><span>28</span></div>
-            </div>
-          </div>
-
-          <div class="mini-item">
-            <img class="mini-img" src="../images/sesameoil_300x300.jpg" alt="">
-            <div>
-              <p class="mini-title">10 công dụng bất ngờ từ dầu dừa</p>
-              <div class="meta"><i class="fa-regular fa-comment" style="opacity:.7"></i><span>15</span></div>
-            </div>
-          </div>
-
-          <div class="mini-item">
-            <img class="mini-img" src="../images/spinach_300x300.jpg" alt="">
-            <div>
-              <p class="mini-title">Lợi ích khi ăn rau mỗi ngày</p>
-              <div class="meta"><i class="fa-regular fa-comment" style="opacity:.7"></i><span>12</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Row 2: Đọc nhiều / Xem nhiều | Video -->
-    <div class="row g-4 mt-5">
-
-      <!-- Left list (pt-4 aligns with video title height) -->
-      <div class="col-12 col-lg-4 pt-4">
-        <div class="d-flex gap-4">
-          <h3 class="section-title" style="font-size:1.4rem; margin: 0;">Đọc nhiều</h3>
-          <h3 class="section-title" style="font-size:1.4rem; margin: 0;">Xem nhiều</h3>
-        </div>
-
-        <div class="simple-list mt-2">
-          <div class="simple-item">
-            <img class="simple-img" src="../images/corevalue.jpg" alt="">
-            <div class="mini-title">Biết ơn đời, đời sẽ thương ta</div>
-          </div>
-          <div class="simple-item">
-            <img class="simple-img" src="../images/sesameoil_300x300.jpg" alt="">
-            <div class="mini-title">10 công dụng bất ngờ từ dầu dừa</div>
-          </div>
-          <div class="simple-item">
-            <img class="simple-img" src="../images/spinach_300x300.jpg" alt="">
-            <div class="mini-title">Lợi ích khi ăn rau mỗi ngày</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Video grid -->
+      <!-- RIGHT CONTENT -->
       <div class="col-12 col-lg-8">
-        <div class="video-title">VIDEO - ĐỪNG BỎ LỠ</div>
+        <div class="section-title">Tất cả bài viết</div>
 
         <div class="row g-3">
+          <!-- Card 1 -->
           <div class="col-12 col-md-6">
-            <div class="card video-card">
-              <img src="../images/video1.jpg" class="card-img-top" alt="">
-              <div class="card-body">
-                <h6 class="fw-bold mb-1">Đi xa hơn để trưởng thành hơn</h6>
-                <p class="small text-muted mb-0">Tuổi trẻ chỉ nghĩ đến những chuyến đi...</p>
+            <div class="post-card">
+              <div class="post-body">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div class="post-title">
+                    Phương pháp tập Pilates giúp phục hồi chấn thương cột sống
+                  </div>
+                  <div class="post-meta">
+                    <i class="fa-regular fa-comment"></i><span>16</span>
+                  </div>
+                </div>
+              </div>
+              <img class="post-thumb" src="../images/tap-piltes.jpg" alt="">
+              <div class="post-body">
+                <p class="post-excerpt">
+                  Ngoài việc giúp duy trì vóc dáng, cải thiện sự linh hoạt, dẻo dai, các bài tập Pilates còn có
+                  khả năng trị đau lưng, là giải pháp hữu hiệu để phục hồi chấn thương cột sống...
+                </p>
               </div>
             </div>
           </div>
 
+          <!-- Card 2 -->
           <div class="col-12 col-md-6">
-            <div class="card video-card">
-              <img src="../images/video2.jpg" class="card-img-top" alt="">
-              <div class="card-body">
-                <h6 class="fw-bold mb-1">Chút tâm tư những ngày cuối năm</h6>
-                <p class="small text-muted mb-0">Guồng quay cuộc sống đâu có vội...</p>
+            <div class="post-card">
+              <div class="post-body">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div class="post-title">
+                    Đây là những gì 1 giờ Tập Pilates có thể làm cho cơ thể của bạn
+                  </div>
+                  <div class="post-meta">
+                    <i class="fa-regular fa-comment"></i><span>8</span>
+                  </div>
+                </div>
+              </div>
+              <img class="post-thumb" src="../images/video1.jpg" alt="">
+              <div class="post-body">
+                <p class="post-excerpt">
+                  Được thiết kế để xây dựng cơ bắp săn chắc, khỏe mạnh hơn, bài tập này đã trở thành một cải tiến
+                  quan trọng nhờ có rất nhiều người nổi tiếng theo đuổi...
+                </p>
               </div>
             </div>
           </div>
 
+          <!-- Card 3 -->
           <div class="col-12 col-md-6">
-            <div class="card video-card">
-              <img src="../images/video3.jpg" class="card-img-top" alt="">
-              <div class="card-body">
-                <h6 class="fw-bold mb-1">Ước gì được trở về tuổi thơ</h6>
-                <p class="small text-muted mb-0">Tuổi trẻ chỉ nghĩ đến những chuyến đi...</p>
+            <div class="post-card">
+              <div class="post-body">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div class="post-title">
+                    Tập Pilates có thể cải thiện sức khỏe tim mạch của bạn
+                  </div>
+                  <div class="post-meta">
+                    <i class="fa-regular fa-comment"></i><span>5</span>
+                  </div>
+                </div>
+              </div>
+              <img class="post-thumb" src="../images/video3.jpg" alt="">
+              <div class="post-body">
+                <p class="post-excerpt">
+                  Tập Pilates không chỉ giúp bạn có một cơ thể khỏe mạnh và linh hoạt mà còn có nhiều lợi ích
+                  cho sức khỏe tim mạch. Bài viết này sẽ tìm hiểu sâu hơn...
+                </p>
               </div>
             </div>
           </div>
 
+          <!-- Card 4 -->
           <div class="col-12 col-md-6">
-            <div class="card video-card">
-              <img src="../images/video4.jpg" class="card-img-top" alt="">
-              <div class="card-body">
-                <h6 class="fw-bold mb-1">Ba người thầy vĩ đại</h6>
-                <p class="small text-muted mb-0">Ta xem vạn vật là thầy. Tình thân...</p>
+            <div class="post-card">
+              <div class="post-body">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div class="post-title">
+                    EAT CLEAN: Nên Và Không Nên Ăn Thực Phẩm Nào?
+                  </div>
+                  <div class="post-meta">
+                    <i class="fa-regular fa-comment"></i><span>3</span>
+                  </div>
+                </div>
+              </div>
+              <img class="post-thumb" src="../images/video4.jpg" alt="">
+              <div class="post-body">
+                <p class="post-excerpt">
+                  Chúng ta luôn chú trọng lựa chọn thực phẩm sạch và duy trì lối sống lành mạnh. Vậy chế độ ăn
+                  Eat clean nên và không nên ăn gì trong thực đơn hằng ngày để cân bằng...
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="text-center mt-3">
-          <button class="btn btn-info text-white px-4">Xem thêm</button>
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-3">
+          <nav aria-label="Page navigation">
+            <ul class="pagination">
+              <li class="page-item"><a class="page-link" href="#"><i class="fa-solid fa-arrow-left"></i></a></li>
+              <li class="page-item active"><a class="page-link" href="#">1</a></li>
+              <li class="page-item"><a class="page-link" href="#">2</a></li>
+              <li class="page-item"><a class="page-link" href="#">3</a></li>
+              <li class="page-item"><a class="page-link" href="#"><i class="fa-solid fa-arrow-right"></i></a></li>
+            </ul>
+          </nav>
         </div>
+
       </div>
     </div>
-
   </div>
 
   <footer>
