@@ -15,6 +15,7 @@ const userInfo = reactive({
     <form>
       <div class="mb-3">
         <label>Họ và Tên</label>
+        <br>
         <input
           v-model="userInfo.name"
           class="form-control"
@@ -24,6 +25,7 @@ const userInfo = reactive({
 
       <div class="mb-3">
         <label>Tuổi</label>
+        <br>
         <input
           v-model="userInfo.age"
           type="number"
@@ -34,6 +36,7 @@ const userInfo = reactive({
 
       <div class="mb-3">
         <label>Email</label>
+        <br>
         <input
           v-model="userInfo.email"
           type="email"
@@ -45,6 +48,7 @@ const userInfo = reactive({
 
     <!-- Live output -->
     <div class="mt-4 p-3 bg-dark text-white rounded">
+        <h1>Thông tin đã nhập</h1>
       <p><b>Họ và Tên:</b> {{ userInfo.name }}</p>
       <p><b>Tuổi:</b> {{ userInfo.age }}</p>
       <p><b>Email:</b> {{ userInfo.email }}</p>
