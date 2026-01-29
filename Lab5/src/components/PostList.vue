@@ -5,11 +5,19 @@ defineProps({
     default: () => []
   }
 })
+
+const ChangeColor = () => {
+  
+}
 </script>
 
 <template>
+  
   <div class="text-center">
     <h1 class="display-4 fw-semibold mb-4">Danh sách bài viết</h1>
+      <button class="btn btn-primary px-4 py-2" @click="">
+          Đổi màu bài viết
+        </button>
 
     <div
       v-for="(post, index) in posts"

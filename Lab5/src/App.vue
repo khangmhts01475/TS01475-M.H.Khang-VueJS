@@ -7,6 +7,6 @@ import Bai3 from './components/Bai3.vue';
 
 <template>
   
- <Bai3/>
+ <Bai1/>
 </template>
 
