@@ -6,11 +6,13 @@ if(month.value==='') return''
 
 const n=Number(month.value)
 if(isNaN(n)) return''
+if(n<1||n>12) return'Tháng không hợp lệ'
 
-if(n>=1||n<=3)'Mùa xuân'
-else if(n<=6) 'Mùa hè'
-else if(n<=9)'Mùa thu'
-else return 'Mùa đông'
+if(n>=1 && n<=3) return 'Mùa xuân'
+else if(n<=6) return 'Mùa hè'
+else if(n<=9) return 'Mùa thu'
+else if(n>9) return 'Mùa đông'
+
 })
 </script>
 
@@ -20,7 +22,7 @@ else return 'Mùa đông'
 
     <input type="number" v-model="month"/>
 
-    <p>{{ month }}</p>
+    <p>{{ season }}</p>
 </div>
 
 </template>
