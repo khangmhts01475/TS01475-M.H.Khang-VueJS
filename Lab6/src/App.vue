@@ -8,6 +8,6 @@ import Bai4 from './components/Bai4.vue';
 
 <template>
   
- <Bai4/>
+ <Bai1/>
 </template>
 

@@ -6,4 +6,4 @@ import './style.css'
 import AppBai4 from './AppBai4.vue'
 import App from './App.vue'
 
-createApp(AppBai4).mount('#app')
+createApp(App).mount('#app')
