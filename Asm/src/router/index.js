@@ -12,8 +12,14 @@ import PostEditor from '@/views/post/PostEditor.vue'
 import Profile from '@/views/personal/Profile.vue'
 
 const routes = [
-  // Launch app at login
-  { path: '/', redirect: '/login' },
+  // ✅ Smart entry: go home if logged in, else login
+  {
+    path: '/',
+    redirect: () => {
+      const isAuth = localStorage.getItem('isAuthenticated') === 'true'
+      return isAuth ? '/home' : '/login'
+    }
+  },
 
   // Public routes
   { path: '/login', name: 'login', component: Login },
@@ -29,7 +35,7 @@ const routes = [
   { path: '/post/:id/edit', name: 'post-edit', component: PostEditor, meta: { requiresAuth: true } },
 
   // Fallback
-  { path: '/:pathMatch(.*)*', redirect: '/login' }
+  { path: '/:pathMatch(.*)*', redirect: '/' }
 ]
 
 const router = createRouter({
@@ -40,11 +46,13 @@ const router = createRouter({
   }
 })
 
-// ✅ Route guard
+// ✅ Route guard with a one-time message when you get kicked to login
 router.beforeEach((to) => {
   const isAuth = localStorage.getItem('isAuthenticated') === 'true'
 
   if (to.meta.requiresAuth && !isAuth) {
+    // one-time flash message (Login.vue will show and clear it)
+    sessionStorage.setItem('flashMessage', 'Please log in to continue.')
     return { path: '/login', query: { redirect: to.fullPath } }
   }
 

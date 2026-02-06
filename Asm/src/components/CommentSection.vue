@@ -1,24 +1,42 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
-import CommentItem from './CommentItem.vue'
+import { ref, computed } from 'vue'
 
 const props = defineProps({
   postId: {
     type: String,
     required: true
+  },
+  canComment: {
+    type: Boolean,
+    default: true
   }
 })
 
-const errorMessage = ref('')
-const infoMessage = ref('')
-const commentText = ref('')
-
-function getCurrentUser() {
+// ---------- helpers ----------
+function safeParseJson(key) {
   try {
-    return JSON.parse(localStorage.getItem('currentUser') || 'null')
+    return JSON.parse(localStorage.getItem(key) || 'null')
   } catch {
     return null
   }
+}
+
+function getCurrentUser() {
+  // Prefer full object
+  const obj = safeParseJson('currentUser')
+  if (obj && typeof obj === 'object') return obj
+
+  // Fallback: email-only login
+  const email = localStorage.getItem('currentUserEmail')
+  if (email) {
+    return {
+      id: email,
+      email,
+      fullName: email.split('@')[0] || 'User'
+    }
+  }
+
+  return null
 }
 
 function loadPosts() {
@@ -34,121 +52,127 @@ function savePosts(posts) {
   localStorage.setItem('posts', JSON.stringify(posts))
 }
 
+function nowIso() {
+  return new Date().toISOString()
+}
+
+function formatDateTime(iso) {
+  if (!iso) return ''
+  const d = new Date(iso)
+  const dd = String(d.getDate()).padStart(2, '0')
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const yyyy = d.getFullYear()
+  const hh = String(d.getHours()).padStart(2, '0')
+  const mi = String(d.getMinutes()).padStart(2, '0')
+  return `${dd}/${mm}/${yyyy} ${hh}:${mi}`
+}
+
+// ---------- state ----------
 const currentUser = ref(getCurrentUser())
 const posts = ref(loadPosts())
 
-// refresh user and posts when postId changes (or when revisiting)
-watch(
-  () => props.postId,
-  () => {
-    currentUser.value = getCurrentUser()
-    posts.value = loadPosts()
-    errorMessage.value = ''
-    infoMessage.value = ''
-    commentText.value = ''
-  },
-  { immediate: true }
+const post = computed(() =>
+  posts.value.find(p => String(p.id) === String(props.postId)) || null
 )
 
-const post = computed(() => posts.value.find(p => String(p.id) === String(props.postId)) || null)
+const comments = computed(() => post.value?.comments || [])
 
-const comments = computed(() => {
-  const arr = post.value?.comments
-  return Array.isArray(arr) ? arr : []
-})
+const newComment = ref('')
+const errorMessage = ref('')
 
-const commentCount = computed(() => comments.value.length)
-
+// ---------- actions ----------
 function addComment() {
   errorMessage.value = ''
-  infoMessage.value = ''
+
+  if (!props.canComment) {
+    errorMessage.value = 'Bạn không thể bình luận bài viết này.'
+    return
+  }
 
   if (!currentUser.value) {
     errorMessage.value = 'Vui lòng đăng nhập để bình luận.'
     return
   }
+
+  if (!newComment.value.trim()) {
+    errorMessage.value = 'Nội dung bình luận không được để trống.'
+    return
+  }
+
   if (!post.value) {
     errorMessage.value = 'Không tìm thấy bài viết.'
     return
   }
 
-  const content = commentText.value.trim()
-  if (!content) {
-    errorMessage.value = 'Vui lòng nhập nội dung bình luận.'
-    return
-  }
-
-  const target = posts.value.find(p => String(p.id) === String(props.postId))
-  if (!target) {
-    errorMessage.value = 'Không tìm thấy bài viết.'
-    return
-  }
-
-  if (!Array.isArray(target.comments)) target.comments = []
-
-  target.comments.unshift({
+  const comment = {
     id: `c_${Date.now()}`,
-    userId: currentUser.value.id,
-    userName: currentUser.value.fullName || 'User',
-    content,
-    createdAt: new Date().toISOString()
-  })
+    content: newComment.value.trim(),
+    authorId: currentUser.value.id,
+    authorName: currentUser.value.fullName || currentUser.value.email || 'User',
+    createdAt: nowIso()
+  }
+
+  post.value.comments = post.value.comments || []
+  post.value.comments.push(comment)
 
   savePosts(posts.value)
-  commentText.value = ''
-  infoMessage.value = 'Đã gửi bình luận.'
+  newComment.value = ''
 }
 </script>
 
 <template>
   <div class="card shadow-sm">
     <div class="card-body">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="mb-0">Bình luận</h4>
-        <span class="badge text-bg-secondary">{{ commentCount }}</span>
+      <h5 class="mb-3">
+        Bình luận ({{ comments.length }})
+      </h5>
+
+      <!-- Cannot comment info -->
+      <div
+        v-if="!canComment"
+        class="alert alert-warning"
+      >
+        Bài viết này không cho phép bình luận.
       </div>
 
-      <div v-if="errorMessage" class="alert alert-danger mb-3">
-        {{ errorMessage }}
-      </div>
-      <div v-if="infoMessage" class="alert alert-success mb-3">
-        {{ infoMessage }}
-      </div>
-
-      <div v-if="!currentUser" class="alert alert-warning mb-4">
-        Vui lòng đăng nhập để bình luận.
-      </div>
-
-      <!-- Comment form -->
-      <form class="mb-4" @submit.prevent="addComment">
-        <div class="mb-3">
-          <label class="form-label">Nội dung bình luận</label>
-          <textarea
-            v-model="commentText"
-            class="form-control"
-            rows="3"
-            placeholder="Nhập bình luận..."
-            :disabled="!currentUser"
-          ></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary" :disabled="!currentUser">
-          Gửi bình luận
-        </button>
-      </form>
-
-      <div v-if="comments.length === 0" class="text-muted">
+      <!-- Comment list -->
+      <div v-if="comments.length === 0" class="text-muted mb-3">
         Chưa có bình luận nào.
       </div>
 
-      <div v-else class="d-flex flex-column gap-3">
-        <CommentItem
-          v-for="(c, idx) in comments"
-          :key="c.id"
-          :comment="c"
-          :index="idx"
-        />
+      <div v-for="c in comments" :key="c.id" class="mb-3">
+        <div class="fw-semibold">
+          {{ c.authorName }}
+          <span class="text-muted small ms-2">
+            {{ formatDateTime(c.createdAt) }}
+          </span>
+        </div>
+        <div style="white-space: pre-wrap;">
+          {{ c.content }}
+        </div>
       </div>
+
+      <hr />
+
+      <!-- Add comment -->
+      <template v-if="canComment">
+        <div v-if="errorMessage" class="alert alert-danger">
+          {{ errorMessage }}
+        </div>
+
+        <textarea
+          v-model="newComment"
+          class="form-control mb-2"
+          rows="3"
+          placeholder="Viết bình luận..."
+        ></textarea>
+
+        <div class="d-flex justify-content-end">
+          <button class="btn btn-primary" @click="addComment">
+            Gửi bình luận
+          </button>
+        </div>
+      </template>
     </div>
   </div>
 </template>

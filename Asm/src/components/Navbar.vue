@@ -1,106 +1,120 @@
-<script setup>
-import { computed, ref } from 'vue'
-import { useRouter, RouterLink } from 'vue-router'
-
-const router = useRouter()
-const isMenuOpen = ref(false)
-
-function getCurrentUser() {
-  try {
-    return JSON.parse(localStorage.getItem('currentUser') || 'null')
-  } catch {
-    return null
-  }
-}
-
-const user = ref(getCurrentUser())
-
-const isAuth = computed(() => localStorage.getItem('isAuthenticated') === 'true' && !!user.value)
-
-function refreshUser() {
-  user.value = getCurrentUser()
-}
-
-// When user logs in/registers, Navbar won't automatically update unless we refresh.
-// Easiest simple approach: refresh on every route nav via a tiny interval-free trick:
-router.afterEach(() => refreshUser())
-
-function logout() {
-  localStorage.removeItem('isAuthenticated')
-  localStorage.removeItem('currentUser')
-  refreshUser()
-  router.push('/login')
-}
-
-function toggleMenu() {
-  isMenuOpen.value = !isMenuOpen.value
-}
-</script>
-
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-      <RouterLink class="navbar-brand fw-semibold" to="/home">
-        Blog App
-      </RouterLink>
+      <router-link class="navbar-brand" to="/">
+        Ứng dụng Blog
+      </router-link>
 
       <button
         class="navbar-toggler"
         type="button"
-        aria-label="Toggle navigation"
-        @click="toggleMenu"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
       >
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <div class="collapse navbar-collapse" :class="{ show: isMenuOpen }">
-        <!-- Left nav -->
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <div id="navbarNav" class="collapse navbar-collapse">
+        <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <RouterLink class="nav-link" to="/home">Trang chủ</RouterLink>
+            <router-link class="nav-link" to="/">Trang chủ</router-link>
           </li>
-
-          <li class="nav-item" v-if="isAuth">
-            <RouterLink class="nav-link" to="/post/new">Tạo bài viết</RouterLink>
-          </li>
-
-          <li class="nav-item" v-if="isAuth">
-            <RouterLink class="nav-link" to="/profile">Hồ sơ</RouterLink>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/post/new">Tạo bài viết</router-link>
           </li>
         </ul>
 
-        <!-- Right side -->
-        <div class="d-flex align-items-center gap-2">
-          <!-- Logged out -->
-          <template v-if="!isAuth">
-            <RouterLink class="btn btn-outline-primary" to="/login">
-              Đăng nhập
-            </RouterLink>
-            <RouterLink class="btn btn-primary" to="/register">
-              Đăng ký
-            </RouterLink>
-          </template>
-
-          <!-- Logged in -->
-          <template v-else>
-            <div class="d-flex align-items-center gap-2 me-2">
-              <img
-                v-if="user?.avatarUrl"
-                :src="user.avatarUrl"
-                alt="avatar"
-                style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;"
-              />
-              <span class="text-muted small">
-                {{ user?.fullName || 'User' }}
+        <ul class="navbar-nav ms-auto align-items-lg-center">
+          <!-- AUTHENTICATED -->
+          <template v-if="isAuthenticated">
+            <li class="nav-item me-2">
+              <span class="navbar-text text-light">
+                Xin chào, {{ displayName }}
               </span>
-            </div>
+            </li>
 
-            <button type="button" class="btn btn-outline-danger" @click="logout">
-              Logout
-            </button>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/profile">Hồ sơ</router-link>
+            </li>
+
+            <li class="nav-item">
+              <button
+                class="btn btn-outline-light btn-sm ms-lg-2"
+                @click="logout"
+              >
+                Đăng xuất
+              </button>
+            </li>
           </template>
-        </div>
+
+          <!-- NOT AUTHENTICATED -->
+          <template v-else>
+            <li class="nav-item">
+              <router-link class="nav-link" to="/login">Đăng nhập</router-link>
+            </li>
+
+            <li class="nav-item">
+              <router-link class="nav-link" to="/register">Đăng ký</router-link>
+            </li>
+          </template>
+        </ul>
       </div>
     </div>
   </nav>
 </template>
+
+<script>
+export default {
+  name: "Navbar",
+
+  data() {
+    return {
+      isAuthenticated: false,
+      currentUser: null
+    };
+  },
+
+  computed: {
+    displayName() {
+      if (this.currentUser?.fullName) return this.currentUser.fullName;
+      if (this.currentUser?.email) return this.currentUser.email;
+      return "Người dùng";
+    }
+  },
+
+  created() {
+    this.syncAuth();
+    window.addEventListener("storage", this.syncAuth);
+  },
+
+  beforeUnmount() {
+    window.removeEventListener("storage", this.syncAuth);
+  },
+
+  methods: {
+    syncAuth() {
+      this.isAuthenticated =
+        localStorage.getItem("isAuthenticated") === "true";
+
+      const raw = localStorage.getItem("currentUser");
+      this.currentUser = raw ? JSON.parse(raw) : null;
+
+      if (!this.currentUser) {
+        const email = localStorage.getItem("currentUserEmail");
+        if (email) {
+          this.currentUser = { email, fullName: "Người dùng" };
+        }
+      }
+    },
+
+    logout() {
+      localStorage.removeItem("isAuthenticated");
+      localStorage.removeItem("currentUser");
+      localStorage.removeItem("currentUserEmail");
+
+      this.syncAuth();
+      this.$router.push("/login");
+    }
+  }
+};
+</script>

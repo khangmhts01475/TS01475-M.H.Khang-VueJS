@@ -1,101 +1,83 @@
 <template>
-  <div class="container py-5" style="max-width: 480px">
-    <h2 class="mb-4 text-center">Login</h2>
+  <div class="container mt-5" style="max-width: 420px">
+    <h2 class="mb-4 text-center">Đăng nhập</h2>
 
-    <div v-if="errorMessage" class="alert alert-danger">
-      {{ errorMessage }}
+    <div v-if="error" class="alert alert-danger">
+      {{ error }}
     </div>
 
-    <form @submit.prevent="handleLogin">
+    <form @submit.prevent="login">
       <div class="mb-3">
         <label class="form-label">Email</label>
         <input
-          v-model="email"
           type="email"
           class="form-control"
-          placeholder="Enter your email"
-          autocomplete="email"
+          v-model="email"
+          required
         />
       </div>
 
       <div class="mb-3">
-        <label class="form-label">Password</label>
+        <label class="form-label">Mật khẩu</label>
         <input
-          v-model="password"
           type="password"
           class="form-control"
-          placeholder="Enter your password"
-          autocomplete="current-password"
+          v-model="password"
+          required
         />
       </div>
 
-      <button type="submit" class="btn btn-primary w-100">
+      <button class="btn btn-primary w-100">
         Đăng nhập
       </button>
-
-      <p class="text-center mt-3 mb-0">
-        Chưa có tài khoản?
-        <RouterLink to="/register">Đăng ký</RouterLink>
-      </p>
     </form>
+
+    <p class="text-center mt-3">
+      Chưa có tài khoản?
+      <router-link to="/register">Đăng ký</router-link>
+    </p>
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+<script>
+export default {
+  name: "Login",
 
-const router = useRouter()
-const route = useRoute()
+  data() {
+    return {
+      email: "",
+      password: "",
+      error: ""
+    };
+  },
 
-const email = ref('')
-const password = ref('')
-const errorMessage = ref('')
+  methods: {
+    login() {
+      const usersRaw = localStorage.getItem("users");
+      const users = usersRaw ? JSON.parse(usersRaw) : [];
 
-function getUsers() {
-  try {
-    return JSON.parse(localStorage.getItem('users') || '[]')
-  } catch {
-    return []
+      const user = users.find(u => u.email === this.email);
+
+      if (user && user.password !== this.password) {
+        this.error = "Mật khẩu không đúng.";
+        return;
+      }
+
+      // Demo-friendly login:
+      // If user does not exist, still allow login
+      const currentUser = user || {
+        id: this.email,
+        email: this.email,
+        fullName: "Người dùng",
+        avatarUrl: ""
+      };
+
+      localStorage.setItem("isAuthenticated", "true");
+      localStorage.setItem("currentUserEmail", currentUser.email);
+      localStorage.setItem("currentUser", JSON.stringify(currentUser));
+
+      this.$router.push("/");
+    }
   }
-}
-
-function handleLogin() {
-  errorMessage.value = ''
-
-  if (!email.value.trim() || !password.value) {
-    errorMessage.value = 'Vui lòng nhập đầy đủ email và mật khẩu'
-    return
-  }
-
-  const users = getUsers()
-
-  const user = users.find(
-    u =>
-      String(u.email || '').toLowerCase() === email.value.trim().toLowerCase() &&
-      String(u.password || '') === password.value
-  )
-
-  if (!user) {
-    errorMessage.value = 'Email hoặc mật khẩu không đúng'
-    return
-  }
-
-  const sessionUser = {
-    id: user.id,
-    fullName: user.fullName,
-    email: user.email,
-    avatarUrl: user.avatarUrl || ''
-  }
-
-  localStorage.setItem('currentUser', JSON.stringify(sessionUser))
-  localStorage.setItem('isAuthenticated', 'true')
-
-  const redirectTo =
-    typeof route.query.redirect === 'string'
-      ? route.query.redirect
-      : '/home'
-
-  router.push(redirectTo)
-}
+};
 </script>
