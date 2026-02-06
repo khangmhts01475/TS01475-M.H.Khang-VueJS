@@ -1,42 +1,243 @@
+<script setup>
+import { computed, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+
+const route = useRoute()
+const router = useRouter()
+
+// ---------- helpers ----------
+function getCurrentUser() {
+  try {
+    return JSON.parse(localStorage.getItem('currentUser') || 'null')
+  } catch {
+    return null
+  }
+}
+
+function loadPosts() {
+  try {
+    const data = JSON.parse(localStorage.getItem('posts') || '[]')
+    return Array.isArray(data) ? data : []
+  } catch {
+    return []
+  }
+}
+
+function savePosts(posts) {
+  localStorage.setItem('posts', JSON.stringify(posts))
+}
+
+function nowIso() {
+  return new Date().toISOString()
+}
+
+// ---------- state ----------
+const currentUser = ref(getCurrentUser())
+const posts = ref(loadPosts())
+
+const postId = computed(() => String(route.params.id || ''))
+const isEditMode = computed(() => route.path.includes('/edit') && !!postId.value)
+
+const errorMessage = ref('')
+const successMessage = ref('')
+
+const form = ref({
+  title: '',
+  category: 'Tổng hợp',
+  imageUrl: '',
+  content: '',
+  status: 'draft', // draft | public
+  pinned: false
+})
+
+// ---------- load for edit ----------
+function findPostById(id) {
+  return posts.value.find(p => String(p.id) === String(id))
+}
+
+function isOwner(post) {
+  return currentUser.value && post && post.authorId === currentUser.value.id
+}
+
+function hydrateEditForm() {
+  if (!isEditMode.value) return
+
+  const p = findPostById(postId.value)
+  if (!p) {
+    errorMessage.value = 'Không tìm thấy bài viết.'
+    return
+  }
+  if (!isOwner(p)) {
+    errorMessage.value = 'Bạn không có quyền chỉnh sửa bài viết này.'
+    return
+  }
+
+  form.value.title = p.title || ''
+  form.value.category = p.category || 'Tổng hợp'
+  form.value.imageUrl = p.imageUrl || ''
+  form.value.content = p.content || ''
+  form.value.status = p.status || 'draft'
+  form.value.pinned = !!p.pinned
+}
+
+hydrateEditForm()
+
+// ---------- validation ----------
+function validate() {
+  errorMessage.value = ''
+  successMessage.value = ''
+
+  if (!form.value.title.trim()) {
+    errorMessage.value = 'Vui lòng nhập tiêu đề.'
+    return false
+  }
+  if (!form.value.content.trim()) {
+    errorMessage.value = 'Vui lòng nhập nội dung.'
+    return false
+  }
+  // imageUrl optional, but if present should look like a url
+  if (form.value.imageUrl.trim() && !/^https?:\/\//i.test(form.value.imageUrl.trim())) {
+    errorMessage.value = 'Link ảnh phải bắt đầu bằng http:// hoặc https://'
+    return false
+  }
+  return true
+}
+
+// ---------- actions ----------
+function cancel() {
+  router.back()
+}
+
+function upsertPost(status) {
+  // status can be 'draft' or 'public'
+  form.value.status = status
+
+  if (!validate()) return
+
+  // Create
+  if (!isEditMode.value) {
+    const p = {
+      id: `p_${Date.now()}`,
+      title: form.value.title.trim(),
+      category: form.value.category,
+      imageUrl: form.value.imageUrl.trim(),
+      content: form.value.content.trim(),
+      status: form.value.status,
+      pinned: !!form.value.pinned,
+
+      authorId: currentUser.value?.id || 'unknown',
+      authorName: currentUser.value?.fullName || 'User',
+      createdAt: nowIso(),
+      updatedAt: nowIso(),
+      comments: []
+    }
+
+    posts.value.unshift(p)
+    savePosts(posts.value)
+
+    router.push(`/post/${p.id}`)
+    return
+  }
+
+  // Edit
+  const existing = findPostById(postId.value)
+  if (!existing) {
+    errorMessage.value = 'Không tìm thấy bài viết.'
+    return
+  }
+  if (!isOwner(existing)) {
+    errorMessage.value = 'Bạn không có quyền chỉnh sửa bài viết này.'
+    return
+  }
+
+  existing.title = form.value.title.trim()
+  existing.category = form.value.category
+  existing.imageUrl = form.value.imageUrl.trim()
+  existing.content = form.value.content.trim()
+  existing.status = form.value.status
+  existing.pinned = !!form.value.pinned
+  existing.updatedAt = nowIso()
+
+  savePosts(posts.value)
+  successMessage.value = 'Đã lưu bài viết.'
+
+  // optionally go back to detail page
+  router.push(`/post/${existing.id}`)
+}
+
+function deletePost() {
+  errorMessage.value = ''
+  successMessage.value = ''
+
+  if (!isEditMode.value) return
+
+  const existing = findPostById(postId.value)
+  if (!existing) {
+    errorMessage.value = 'Không tìm thấy bài viết.'
+    return
+  }
+  if (!isOwner(existing)) {
+    errorMessage.value = 'Bạn không có quyền xóa bài viết này.'
+    return
+  }
+
+  const ok = confirm('Bạn có chắc muốn xóa bài viết này không?')
+  if (!ok) return
+
+  posts.value = posts.value.filter(p => p.id !== existing.id)
+  savePosts(posts.value)
+  router.push('/home')
+}
+</script>
+
 <template>
   <div class="container py-4">
     <!-- Header -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-4">
       <div>
-        <h2 class="mb-1">Soạn bài viết</h2>
-        <p class="text-muted mb-0">Tạo mới hoặc chỉnh sửa bài viết (UI-only)</p>
+        <h2 class="mb-1">{{ isEditMode ? 'Chỉnh sửa bài viết' : 'Soạn bài viết' }}</h2>
+        <p class="text-muted mb-0">
+          {{ isEditMode ? 'Cập nhật nội dung bài viết' : 'Tạo bài viết mới' }}
+        </p>
       </div>
 
       <div class="d-flex gap-2">
-        <button type="button" class="btn btn-outline-secondary" disabled>
+        <button type="button" class="btn btn-outline-secondary" @click="cancel">
           Hủy
         </button>
-        <button type="button" class="btn btn-primary" disabled>
+        <button type="button" class="btn btn-primary" @click="upsertPost(form.status)">
           Lưu bài viết
         </button>
       </div>
     </div>
 
+    <!-- Messages -->
+    <div v-if="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+    <div v-if="successMessage" class="alert alert-success">
+      {{ successMessage }}
+    </div>
+
     <!-- Editor form -->
     <div class="card shadow-sm">
       <div class="card-body">
-        <form>
+        <form @submit.prevent="upsertPost(form.status)">
           <!-- Title -->
           <div class="mb-3">
             <label class="form-label">Tiêu đề</label>
             <input
+              v-model="form.title"
               type="text"
               class="form-control"
               placeholder="Nhập tiêu đề bài viết"
-              disabled
             />
           </div>
 
-          <!-- Category (optional UI) -->
+          <!-- Category -->
           <div class="mb-3">
             <label class="form-label">Chủ đề</label>
-            <select class="form-select" disabled>
-              <option selected>Chọn chủ đề</option>
+            <select v-model="form.category" class="form-select">
               <option>Tổng hợp</option>
               <option>Công nghệ</option>
               <option>Đời sống</option>
@@ -49,10 +250,10 @@
           <div class="mb-3">
             <label class="form-label">Ảnh minh họa (tuỳ chọn)</label>
             <input
+              v-model="form.imageUrl"
               type="url"
               class="form-control"
               placeholder="https://example.com/image.png"
-              disabled
             />
           </div>
 
@@ -60,27 +261,27 @@
           <div class="mb-3">
             <label class="form-label">Nội dung</label>
             <textarea
+              v-model="form.content"
               class="form-control"
               rows="10"
               placeholder="Nhập nội dung bài viết..."
-              disabled
             ></textarea>
           </div>
 
-          <!-- Status (optional UI) -->
+          <!-- Status + pin -->
           <div class="row g-3">
             <div class="col-12 col-md-6">
               <label class="form-label">Trạng thái</label>
-              <select class="form-select" disabled>
-                <option selected>Bản nháp</option>
-                <option>Công khai</option>
+              <select v-model="form.status" class="form-select">
+                <option value="draft">Bản nháp</option>
+                <option value="public">Công khai</option>
               </select>
             </div>
 
             <div class="col-12 col-md-6">
               <label class="form-label">Ghim bài viết</label>
               <div class="form-check mt-2">
-                <input class="form-check-input" type="checkbox" disabled />
+                <input v-model="form.pinned" class="form-check-input" type="checkbox" />
                 <label class="form-check-label">
                   Ghim lên đầu trang
                 </label>
@@ -92,20 +293,26 @@
 
           <!-- Bottom actions -->
           <div class="d-flex flex-column flex-md-row gap-2 justify-content-end">
-            <button type="button" class="btn btn-outline-danger" disabled>
+            <button
+              v-if="isEditMode"
+              type="button"
+              class="btn btn-outline-danger"
+              @click="deletePost"
+            >
               Xóa bài viết
             </button>
-            <button type="button" class="btn btn-outline-secondary" disabled>
+
+            <button type="button" class="btn btn-outline-secondary" @click="upsertPost('draft')">
               Lưu bản nháp
             </button>
-            <button type="button" class="btn btn-primary" disabled>
+
+            <button type="button" class="btn btn-primary" @click="upsertPost('public')">
               Đăng bài
             </button>
           </div>
 
-          <!-- Notice -->
           <div class="alert alert-info mt-4 mb-0">
-            UI-only: Các nút và trường nhập hiện đang bị vô hiệu hóa. Sẽ kích hoạt sau khi thêm logic và authentication.
+            Gợi ý: Bạn có thể lưu bản nháp hoặc đăng bài. Khi đăng bài, bài viết vẫn thuộc quyền quản lý của bạn.
           </div>
         </form>
       </div>
