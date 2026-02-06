@@ -1,5 +1,8 @@
 <script setup>
 import { ref } from 'vue'
+import { useRouter, RouterLink } from 'vue-router'
+
+const router = useRouter()
 
 const fullName = ref('')
 const email = ref('')
@@ -8,9 +11,22 @@ const confirmPassword = ref('')
 const avatarUrl = ref('')
 const errorMessage = ref('')
 
-const handleRegister = () => {
-  // simple validation (fake register for now)
-  if (!fullName.value || !email.value || !password.value || !confirmPassword.value) {
+function getUsers() {
+  try {
+    return JSON.parse(localStorage.getItem('users') || '[]')
+  } catch {
+    return []
+  }
+}
+
+function saveUsers(users) {
+  localStorage.setItem('users', JSON.stringify(users))
+}
+
+function handleRegister() {
+  errorMessage.value = ''
+
+  if (!fullName.value.trim() || !email.value.trim() || !password.value || !confirmPassword.value) {
     errorMessage.value = 'Vui lòng nhập đầy đủ thông tin bắt buộc'
     return
   }
@@ -20,16 +36,28 @@ const handleRegister = () => {
     return
   }
 
-  // fake register success (ASM-friendly)
-  console.log('Register info:', {
-    fullName: fullName.value,
-    email: email.value,
-    password: password.value,
-    avatarUrl: avatarUrl.value
-  })
+  const users = getUsers()
+  const normalizedEmail = email.value.trim().toLowerCase()
 
-  errorMessage.value = ''
-  alert('Đăng ký thành công (giả lập)')
+  const existed = users.some(u => String(u.email || '').toLowerCase() === normalizedEmail)
+  if (existed) {
+    errorMessage.value = 'Email này đã được đăng ký'
+    return
+  }
+
+  const newUser = {
+    id: `u_${Date.now()}`,
+    fullName: fullName.value.trim(),
+    email: normalizedEmail,
+    password: password.value,
+    avatarUrl: avatarUrl.value.trim()
+  }
+
+  users.push(newUser)
+  saveUsers(users)
+
+  alert('Đăng ký thành công! Vui lòng đăng nhập.')
+  router.push('/login')
 }
 </script>
 
@@ -39,13 +67,11 @@ const handleRegister = () => {
       <div class="card-body">
         <h3 class="text-center mb-4">Đăng ký</h3>
 
-        <!-- Error message -->
         <div v-if="errorMessage" class="alert alert-danger">
           {{ errorMessage }}
         </div>
 
         <form @submit.prevent="handleRegister">
-          <!-- Full name -->
           <div class="mb-3">
             <label class="form-label">Họ và tên</label>
             <input
@@ -56,7 +82,6 @@ const handleRegister = () => {
             />
           </div>
 
-          <!-- Email -->
           <div class="mb-3">
             <label class="form-label">Email</label>
             <input
@@ -67,7 +92,6 @@ const handleRegister = () => {
             />
           </div>
 
-          <!-- Password -->
           <div class="mb-3">
             <label class="form-label">Mật khẩu</label>
             <input
@@ -78,7 +102,6 @@ const handleRegister = () => {
             />
           </div>
 
-          <!-- Confirm password -->
           <div class="mb-3">
             <label class="form-label">Xác nhận mật khẩu</label>
             <input
@@ -89,30 +112,24 @@ const handleRegister = () => {
             />
           </div>
 
-          <!-- Avatar (optional) -->
           <div class="mb-3">
             <label class="form-label">Ảnh đại diện (tuỳ chọn)</label>
             <input
               type="url"
               class="form-control"
               v-model="avatarUrl"
-              placeholder="https://example.com/avatar.png"
+              placeholder=""
             />
-            <div class="form-text">
-              Dán link ảnh để hiển thị avatar sau này.
-            </div>
           </div>
 
-          <!-- Button -->
           <button type="submit" class="btn btn-primary w-100">
             Tạo tài khoản
           </button>
         </form>
 
-        <!-- Extra -->
         <p class="text-center mt-3 mb-0">
           Đã có tài khoản?
-          <a href="#">Đăng nhập</a>
+          <RouterLink to="/login">Đăng nhập</RouterLink>
         </p>
       </div>
     </div>

@@ -1,74 +1,101 @@
+<template>
+  <div class="container py-5" style="max-width: 480px">
+    <h2 class="mb-4 text-center">Login</h2>
+
+    <div v-if="errorMessage" class="alert alert-danger">
+      {{ errorMessage }}
+    </div>
+
+    <form @submit.prevent="handleLogin">
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input
+          v-model="email"
+          type="email"
+          class="form-control"
+          placeholder="Enter your email"
+          autocomplete="email"
+        />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input
+          v-model="password"
+          type="password"
+          class="form-control"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+        />
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100">
+        Đăng nhập
+      </button>
+
+      <p class="text-center mt-3 mb-0">
+        Chưa có tài khoản?
+        <RouterLink to="/register">Đăng ký</RouterLink>
+      </p>
+    </form>
+  </div>
+</template>
+
 <script setup>
 import { ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+
+const router = useRouter()
+const route = useRoute()
 
 const email = ref('')
 const password = ref('')
 const errorMessage = ref('')
 
-const handleLogin = () => {
-  // simple validation (fake auth for now)
-  if (!email.value || !password.value) {
+function getUsers() {
+  try {
+    return JSON.parse(localStorage.getItem('users') || '[]')
+  } catch {
+    return []
+  }
+}
+
+function handleLogin() {
+  errorMessage.value = ''
+
+  if (!email.value.trim() || !password.value) {
     errorMessage.value = 'Vui lòng nhập đầy đủ email và mật khẩu'
     return
   }
 
-  // fake login success (ASM-friendly)
-  console.log('Login info:', {
-    email: email.value,
-    password: password.value
-  })
+  const users = getUsers()
 
-  errorMessage.value = ''
-  alert('Đăng nhập thành công (giả lập)')
+  const user = users.find(
+    u =>
+      String(u.email || '').toLowerCase() === email.value.trim().toLowerCase() &&
+      String(u.password || '') === password.value
+  )
+
+  if (!user) {
+    errorMessage.value = 'Email hoặc mật khẩu không đúng'
+    return
+  }
+
+  const sessionUser = {
+    id: user.id,
+    fullName: user.fullName,
+    email: user.email,
+    avatarUrl: user.avatarUrl || ''
+  }
+
+  localStorage.setItem('currentUser', JSON.stringify(sessionUser))
+  localStorage.setItem('isAuthenticated', 'true')
+
+  const redirectTo =
+    typeof route.query.redirect === 'string'
+      ? route.query.redirect
+      : '/home'
+
+  router.push(redirectTo)
 }
 </script>
-
-<template>
-  <div class="container d-flex justify-content-center align-items-center min-vh-100">
-    <div class="card shadow" style="width: 400px;">
-      <div class="card-body">
-        <h3 class="text-center mb-4">Đăng nhập</h3>
-
-        <!-- Error message -->
-        <div v-if="errorMessage" class="alert alert-danger">
-          {{ errorMessage }}
-        </div>
-
-        <form @submit.prevent="handleLogin">
-          <!-- Email -->
-          <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input
-              type="email"
-              class="form-control"
-              v-model="email"
-              placeholder="ten@example.com"
-            />
-          </div>
-
-          <!-- Password -->
-          <div class="mb-3">
-            <label class="form-label">Mật khẩu</label>
-            <input
-              type="password"
-              class="form-control"
-              v-model="password"
-              placeholder="Nhập mật khẩu"
-            />
-          </div>
-
-          <!-- Button -->
-          <button type="submit" class="btn btn-primary w-100">
-            Đăng nhập
-          </button>
-        </form>
-
-        <!-- Extra -->
-        <p class="text-center mt-3 mb-0">
-          Chưa có tài khoản?
-          <a href="#">Đăng ký</a>
-        </p>
-      </div>
-    </div>
-  </div>
-</template>
