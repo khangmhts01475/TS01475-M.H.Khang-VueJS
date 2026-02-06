@@ -7,5 +7,5 @@ import Bai4 from './components/Bai4.vue'
 </script>
 
 <template>
-  <Bai1/>
+  <Bai4/>
 </template>

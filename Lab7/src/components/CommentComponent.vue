@@ -1,57 +1,66 @@
-<template>
-<div class="card p-3 overflow-hidden" style="max-width: 400px">
-
-    <h4>Bình luận bài viết</h4>
-
-<img
-  :src="img1"
-  class="img-fluid mb-3"
-  style="width: 100%; object-fit: cover;"
-/>
-
-
-    <h5>8 loại rau củ quả giàu canxi</h5>
-    <p>
-      Canxi là khoáng chất cần thiết đối với cơ thể người. Có nhiều cách để
-      bổ sung canxi, trong đó bổ sung qua đường ăn uống là cách tốt nhất.
-      Có 8 loại rau củ giàu canxi...
-    </p>
-
-    <textarea
-      class="form-control mb-2"
-      rows="2"
-      placeholder="Nhập bình luận của bạn"
-      v-model="comment"
-    ></textarea>
-
-    <button class="btn btn-success mb-3" @click="send">
-      Gửi bình luận
-    </button>
-
-    <h6>Danh sách các bình luận:</h6>
-    <ul>
-      <li v-for="(c, i) in comments" :key="i">
-        <strong>{{ username }}:</strong> {{ c }}
-      </li>
-    </ul>
-  </div>
-</template>
-
 <script setup>
 import { ref } from 'vue'
-import img1 from '../assets/images/img1.jpg'
 
-defineProps({
-  username: String
+const props = defineProps({
+  user: { type: String, required: true }
 })
 
-const comment = ref('')
+const emit = defineEmits(['logout'])
+
+const commentText = ref('')
 const comments = ref([])
 
-const send = () => {
-  if (comment.value) {
-    comments.value.push(comment.value)
-    comment.value = ''
-  }
+const addComment = () => {
+  const value = commentText.value.trim()
+  if (!value) return
+
+  comments.value.unshift({
+    user: props.user,
+    content: value,
+    time: new Date().toLocaleString()
+  })
+
+  commentText.value = ''
+}
+
+const logout = () => {
+  emit('logout')
 }
 </script>
+
+<template>
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h4 class="mb-0">Bình luận</h4>
+          <div class="text-muted">Chào mừng, {{ user }}</div>
+        </div>
+        <button class="btn btn-outline-secondary" @click="logout">Đăng xuất</button>
+      </div>
+
+      <form class="d-flex gap-2 mb-3" @submit.prevent="addComment">
+        <input
+          class="form-control"
+          v-model="commentText"
+          placeholder="Nhập bình luận..."
+        />
+        <button class="btn btn-success" type="submit">Gửi</button>
+      </form>
+
+      <div v-if="comments.length === 0" class="alert alert-secondary mb-0">
+        Chưa có bình luận nào.
+      </div>
+
+      <ul v-else class="list-group">
+        <li class="list-group-item" v-for="(c, i) in comments" :key="i">
+          <div class="d-flex justify-content-between">
+            <strong>{{ c.user }}</strong>
+            <small class="text-muted">{{ c.time }}</small>
+          </div>
+          <div>{{ c.content }}</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
